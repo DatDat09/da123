@@ -62,11 +62,9 @@ module.exports = {
   },
   putCourses: async (req, res) => {
     const CourseID = req.params.idCourse;
-    console.log(">>>checkid", CourseID)
     const newData = req.body;
-
     try {
-      const updatedData = await Course.findByIdAndUpdate({ idCourse: CourseID }, newData, { new: true });
+      const updatedData = await Course.findByIdAndUpdate(CourseID, newData, { new: true });
       res.status(200).json(updatedData);
     } catch (err) {
       console.error(err);

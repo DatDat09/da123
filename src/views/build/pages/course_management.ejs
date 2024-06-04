@@ -547,13 +547,13 @@
                                                         </button>
                                                         <button type="button"
                                                             class="ml-1 px-1 py-1 bg-blue-500 rounded-1.4 hover:-translate-y-px active:opacity-85 hover:shadow-md"
-                                                            onclick="showDialog_view('<%= course.name %>','<%= course.maHocPhan %>','<%= course.tinChi %>')">
+                                                            onclick="showDialog_view('<%= course.name %>','<%= course.maHocPhan %>','<%= course.tinChi %>','<%= course.description %>')">
                                                             <img src="../img/ic/ic_visibility.svg" class="w-4 h-4"
                                                                 alt="Icon">
                                                         </button>
                                                         <button type="button"
                                                             class="ml-1 px-1 py-1 bg-blue-500 rounded-1.4 hover:-translate-y-px active:opacity-85 hover:shadow-md"
-                                                            onclick="showDialog_edit('<%= course.name %>', '<%= course.maHocPhan %>', '<%= course.tinChi %>','<%= course._id%>')">
+                                                            onclick="showDialog_edit('<%= course.name %>', '<%= course.maHocPhan %>', '<%= course.tinChi %>','<%= course.description %>','<%= course._id%>')">
                                                             <img src="../img/ic/ic_edit.svg" class="w-4 h-4" alt="Icon">
                                                         </button>
                                                         <button type="button"
@@ -677,9 +677,9 @@
                 </div>
                 <div class="w-full max-w-full px-3 shrink-0 md:w-6/12 md:flex-0">
                     <div class="mb-4">
-                        <label class="inline-block ml-1 font-bold text-sm text-slate-800 dark:text-white/80">Học phần
-                            điều kiện</label>
-                        <input value="" type="text" readonly
+                        <label class="inline-block ml-1 font-bold text-sm text-slate-800 dark:text-white/80">Loại học
+                            phần</label>
+                        <input id="description" value="" type="text" readonly
                             class="bg-gray-200 focus:shadow-primary-outline dark:bg-slate-850 dark:text-white text-sm leading-5.6 ease block w-full appearance-none rounded-lg border border-solid border-gray-300 bg-clip-padding px-3 py-2 font-normal text-gray-700 outline-none transition-all placeholder:text-gray-500 focus:border-blue-500 focus:outline-none">
                     </div>
                 </div>
@@ -729,10 +729,11 @@
         </div>
     </div>
     <script>
-        function showDialog_view(name, maHocPhan, tinChi) {
+        function showDialog_view(name, maHocPhan, tinChi, description) {
             document.getElementById('name').value = name;
             document.getElementById('maHocPhan').value = maHocPhan;
             document.getElementById('tinChi').value = tinChi;
+            document.getElementById('description').value = description;
             document.getElementById("dialog_view").classList.remove('hidden');
         }
 
@@ -785,8 +786,8 @@
                 <div class="w-full max-w-full px-3 shrink-0 md:w-6/12 md:flex-0">
                     <div class="mb-4">
                         <label class="inline-block ml-1 font-bold text-sm text-slate-800 dark:text-white/80">
-                            Học phần điều kiện</label>
-                        <input value="" type="text"
+                            Lọai học phần</label>
+                        <input name="description" value="" type="text"
                             class="focus:shadow-primary-outline dark:bg-slate-850 dark:text-white text-sm leading-5.6 ease block w-full appearance-none rounded-lg border border-solid border-gray-300 bg-clip-padding px-3 py-2 font-normal text-gray-700 outline-none transition-all placeholder:text-gray-500 focus:border-blue-500 focus:outline-none">
                     </div>
                 </div>
@@ -846,9 +847,10 @@
                     const newName = document.querySelector("#dialog_edit input[name='name']").value;
                     const newmaHocPhan = document.querySelector("#dialog_edit input[name='maHocPhan']").value;
                     const newtinChi = document.querySelector("#dialog_edit input[name='tinChi']").value;
+                    const newdescription = document.querySelector("#dialog_edit input[name='description']").value;
                     try {
                         // Gửi yêu cầu cập nhật dữ liệu đến máy chủ
-                        const response = await fetch(`/courses/${idCourse}`, {
+                        const response = await fetch(`/courses/${id}`, {
                             method: 'PUT',
                             headers: {
                                 'Content-Type': 'application/json'
@@ -857,7 +859,8 @@
 
                                 name: newName,
                                 maHocPhan: newmaHocPhan,
-                                tinChi: newtinChi
+                                tinChi: newtinChi,
+                                description: newdescription
                             })
                         });
 
@@ -884,16 +887,18 @@
                 <input type="text" name="name">
                 <input type="text" name="maHocPhan">
                 <input type="text" name="tinChi">
+                <input type="text" name="description">
                 <input type="hidden" name="id">
                 <button id="button_edit" class="hidden">Chỉnh sửa</button>
-                <!-- <button id="button_add" class="hidden">Thêm mới</button> -->
+
             </div>
         </div>
     </div>
     <script>
         let isAddButtonEventBound = false;
 
-        function showDialog_edit(name, maHocPhan, tinChi, id) {
+        function showDialog_edit(name, maHocPhan, tinChi, description, id) {
+
             let dialog = document.getElementById("dialog_edit");
             dialog.classList.remove('hidden');
 
@@ -902,6 +907,7 @@
             let nameInput = document.querySelector("#dialog_edit input[name='name']");
             let maHocPhanInput = document.querySelector("#dialog_edit input[name='maHocPhan']");
             let tinChiInput = document.querySelector("#dialog_edit input[name='tinChi']");
+            let descriptionInput = document.querySelector("#dialog_edit input[name='description']");
             let idInput = document.querySelector("#dialog_edit input[name='id']");
 
             // Fill in the input fields with data
@@ -909,6 +915,7 @@
             nameInput.value = name;
             maHocPhan.value = maHocPhan;
             tinChi.value = tinChi;
+            description.value = description;
             idInput.value = id;
 
 
@@ -932,6 +939,7 @@
             document.querySelector("#dialog_edit input[name='name']").value = "";
             document.querySelector("#dialog_edit input[name='maHocPhan']").value = "";
             document.querySelector("#dialog_edit input[name='tinChi']").value = "";
+            document.querySelector("#dialog_edit input[name='description']").value = "";
             document.querySelector("#dialog_edit input[name='id']").value = "";
 
             // Hiển thị nút thêm mới và ẩn nút chỉnh sửa
@@ -954,6 +962,7 @@
             const newName = document.querySelector("#dialog_edit input[name='name']").value;
             const newmaHocPhan = document.querySelector("#dialog_edit input[name='maHocPhan']").value;
             const newtinChi = document.querySelector("#dialog_edit input[name='tinChi']").value;
+            const newdescription = document.querySelector("#dialog_edit input[name='description']").value;
 
             try {
                 // Gửi yêu cầu thêm mới dữ liệu đến máy chủ
@@ -967,7 +976,7 @@
                         name: newName,
                         maHocPhan: newmaHocPhan,
                         tinChi: newtinChi,
-
+                        description: newdescription
                     })
                 })
                     .then(response => {

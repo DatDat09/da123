@@ -414,30 +414,51 @@
 
                         <div class="flex flex-wrap">
                             <div class="md:w-1/2 lg:w-1/3 xl:w-1/4 max-w-xs lg:max-w-md xl:max-w-lg p-4">
-                                <input type="text" placeholder="Tìm mã lớp học"
+                                <input id="search-input-code" type="text" placeholder="Tìm mã lớp học"
+                                    value="<%= typeof searchCode !== 'undefined' ? searchCode : '' %>"
                                     class="focus:shadow-primary-outline text-sm leading-5.6 ease block w-full appearance-none rounded-lg border border-solid border-gray-300 bg-white bg-clip-padding px-3 py-2 font-normal text-gray-700 outline-none transition-all placeholder:text-gray-500 focus:border-blue-500 focus:outline-none"></input>
                             </div>
                             <div class="md:w-1/2 lg:w-1/3 xl:w-1/4 max-w-xs lg:max-w-md xl:max-w-lg p-4">
-                                <!-- Nội dung cột 2 -->
-                                <input type="text" placeholder="Tìm tên lớp học"
+                                <input id="search-input-name" type="text" placeholder="Tìm tên lớp học"
+                                    value="<%= typeof searchName !== 'undefined' ? searchName : '' %>"
                                     class="focus:shadow-primary-outline text-sm leading-5.6 ease block w-full appearance-none rounded-lg border border-solid border-gray-300 bg-white bg-clip-padding px-3 py-2 font-normal text-gray-700 outline-none transition-all placeholder:text-gray-500 focus:border-blue-500 focus:outline-none"></input>
                             </div>
                             <div class="md:w-1/2 lg:w-1/3 xl:w-1/4 max-w-xs lg:max-w-md xl:max-w-lg p-4">
                                 <div class="flex flex-row">
-                                    <button type="button"
+                                    <button id="search-button" type="button"
                                         class="inline-flex items-center px-2 py-2.5 mr-4 font-bold text-white uppercase align-middle transition-all rounded-lg cursor-pointer bg-gradient-to-tl from-blue-500 to-violet-500 leading-normal text-xs ease-in tracking-tight-rem shadow-xs bg-150 bg-x-25 hover:-translate-y-px active:opacity-85 hover:shadow-md">
                                         <img src="../img/ic/ic_search.svg" class="w-5 h-5 text-white" alt="Icon">
                                         <span>Tìm kiếm</span>
                                     </button>
-                                    <button type="button"
+                                    <button id="reset-button" type="button"
                                         class="inline-flex items-center px-2 py-2.5 font-bold text-white uppercase align-middle transition-all rounded-lg cursor-pointer bg-gradient-to-tl from-red-600 to-orange-600 leading-normal text-xs ease-in tracking-tight-rem shadow-xs bg-150 bg-x-25 hover:-translate-y-px active:opacity-85 hover:shadow-md">
                                         <img src="../img/ic/ic_search.svg" class="w-5 h-5 text-white" alt="Icon">
                                         <span>Reset</span>
                                     </button>
                                 </div>
                             </div>
-
                         </div>
+                        <script>
+                            document.getElementById('search-button').addEventListener('click', function () {
+                                const searchInputCode = document.querySelector('#search-input-code').value;
+                                const searchInputName = document.querySelector('#search-input-name').value;
+                                const url = new URL(window.location.href);
+                                url.pathname = '/class';
+                                url.searchParams.set('page', 1);  // Thiết lập trang mặc định là 1
+                                if (searchInputCode) {
+                                    url.searchParams.set('mhp', searchInputCode);
+                                }
+                                if (searchInputName) {
+                                    url.searchParams.set('thp', searchInputName);
+                                }
+                                window.location.href = url.toString();
+                            });
+
+                            document.getElementById('reset-button').addEventListener('click', function () {
+                                window.location.href = '/class?page=1';
+                            });
+                        </script>
+
                         <div class="flex-auto px-0 pt-0 pb-2">
                             <div class="p-0 overflow-x-auto">
                                 <table
@@ -471,7 +492,7 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <% let counter=1; listClassByCourse.forEach(function(classes){ %>
+                                        <% let counter=1; listClass.forEach(function(classes){ %>
                                             <tr>
                                                 <td
                                                     class="px-6 py-3 align-middle bg-transparent border-b dark:border-white/40 whitespace-nowrap shadow-transparent">
@@ -565,7 +586,66 @@
             </div>
         </div>
         <!-- end cards -->
+        <div style="text-align:center; margin-top: 20px;">
 
+            <style>
+                .pagination {
+                    display: inline-block;
+                    padding: 0;
+                    margin: 0;
+                }
+
+                .pagination a,
+                .pagination span {
+                    color: #6a0dad;
+                    /* Màu tím chủ đạo */
+                    float: left;
+                    padding: 8px 16px;
+                    text-decoration: none;
+                    transition: background-color 0.3s;
+                    border: 1px solid #ddd;
+                    margin: 0 4px;
+                    border-radius: 4px;
+                }
+
+                .pagination a:hover {
+                    background-color: #ddd;
+                }
+
+                .pagination a.active {
+                    background-color: #6a0dad;
+                    color: white;
+                    border: 1px solid #6a0dad;
+                }
+            </style>
+
+            <div class="pagination">
+                <% if (typeof totalPages !=='undefined' && totalPages> 1) { %>
+                    <a href="?page=<%= currentPage > 1 ? currentPage - 1 : 1 %>&mhp=<%= searchCode %>&thp=<%= searchName %>"
+                        class="pagination-link <%= currentPage === 1 ? 'disabled' : '' %>">Previous</a>
+                    <% for (let i=1; i <=totalPages; i++) { %>
+                        <a href="?page=<%= i %>&mhp=<%= searchCode %>&thp=<%= searchName %>"
+                            class="pagination-link <%= currentPage === i ? 'active' : '' %>">
+                            <%= i %>
+                        </a>
+                        <% } %>
+                            <% if (currentPage < totalPages) { %>
+                                <a href="?page=<%= currentPage + 1 %>&mhp=<%= searchCode %>&thp=<%= searchName %>"
+                                    class="pagination-link">Next</a>
+                                <% } else { %>
+                                    <span class="pagination-link">Next</span>
+                                    <% } %>
+                                        <% } %>
+            </div>
+            <script>
+                document.addEventListener('DOMContentLoaded', () => {
+                    const activeLink = document.querySelector('.pagination-link.active');
+                    if (activeLink) {
+                        activeLink.style.fontWeight = 'bold';
+                    }
+                });
+            </script>
+        </div>
     </main>
 
     <!-- -->
@@ -709,12 +789,11 @@ hidden z-50">
                 class="h-px mt-0 bg-transparent bg-gradient-to-r from-transparent via-black/40 to-transparent dark:bg-gradient-to-r dark:from-transparent dark:via-white dark:to-transparent" />
 
             <div class="flex flex-wrap -mx-3 px-6">
-
                 <div class="w-full max-w-full px-3 shrink-0 md:w-6/12 md:flex-0">
                     <div class="mb-4">
                         <label class="inline-block ml-1 font-bold text-sm text-slate-800 dark:text-white/80">
                             Tên học phần</label>
-                        <input value="" type="text" name="name"
+                        <input name="name" value="" type="text"
                             class="bg-gray-200 focus:shadow-primary-outline dark:bg-slate-850 dark:text-white text-sm leading-5.6 ease block w-full appearance-none rounded-lg border border-solid border-gray-300 bg-clip-padding px-3 py-2 font-normal text-gray-700 outline-none transition-all placeholder:text-gray-500 focus:border-blue-500 focus:outline-none">
                     </div>
                 </div>
@@ -722,7 +801,7 @@ hidden z-50">
                     <div class="mb-4">
                         <label class="inline-block ml-1 font-bold text-sm text-slate-800 dark:text-white/80">
                             Mã lớp</label>
-                        <input value="ET1234" type="text" name="malop"
+                        <input name="malop" value="" type="text"
                             class="bg-gray-200 focus:shadow-primary-outline dark:bg-slate-850 dark:text-white text-sm leading-5.6 ease block w-full appearance-none rounded-lg border border-solid border-gray-300 bg-clip-padding px-3 py-2 font-normal text-gray-700 outline-none transition-all placeholder:text-gray-500 focus:border-blue-500 focus:outline-none">
                     </div>
                 </div>
@@ -730,7 +809,7 @@ hidden z-50">
                     <div class="mb-4">
                         <label class="inline-block ml-1 font-bold text-sm text-slate-800 dark:text-white/80">
                             Phòng học</label>
-                        <input value="" type="text" name="phongHoc"
+                        <input name="phongHoc" value="" type="text"
                             class="bg-gray-200 focus:shadow-primary-outline dark:bg-slate-850 dark:text-white text-sm leading-5.6 ease block w-full appearance-none rounded-lg border border-solid border-gray-300 bg-clip-padding px-3 py-2 font-normal text-gray-700 outline-none transition-all placeholder:text-gray-500 focus:border-blue-500 focus:outline-none">
                     </div>
                 </div>
@@ -738,7 +817,7 @@ hidden z-50">
                     <div class="mb-4">
                         <label class="inline-block ml-1 font-bold text-sm text-slate-800 dark:text-white/80">
                             Số lượng</label>
-                        <input value="" type="text" name="soluong"
+                        <input name="soluong" value="" type="text"
                             class="bg-gray-200 focus:shadow-primary-outline dark:bg-slate-850 dark:text-white text-sm leading-5.6 ease block w-full appearance-none rounded-lg border border-solid border-gray-300 bg-clip-padding px-3 py-2 font-normal text-gray-700 outline-none transition-all placeholder:text-gray-500 focus:border-blue-500 focus:outline-none">
                     </div>
                 </div>
@@ -746,7 +825,7 @@ hidden z-50">
                     <div class="mb-4">
                         <label class="inline-block ml-1 font-bold text-sm text-slate-800 dark:text-white/80">
                             Số lượng tối đa</label>
-                        <input value="" type="text" name="maxStudent"
+                        <input name="maxStudent" value="" type="text"
                             class="bg-gray-200 focus:shadow-primary-outline dark:bg-slate-850 dark:text-white text-sm leading-5.6 ease block w-full appearance-none rounded-lg border border-solid border-gray-300 bg-clip-padding px-3 py-2 font-normal text-gray-700 outline-none transition-all placeholder:text-gray-500 focus:border-blue-500 focus:outline-none">
                     </div>
                 </div>
@@ -754,7 +833,7 @@ hidden z-50">
                     <div class="mb-4">
                         <label class="inline-block ml-1 font-bold text-sm text-slate-800 dark:text-white/80">
                             Thời gian bắt đầu</label>
-                        <input value="" type="text" name="startTime"
+                        <input name="startTime" value="" type="text"
                             class="bg-gray-200 focus:shadow-primary-outline dark:bg-slate-850 dark:text-white text-sm leading-5.6 ease block w-full appearance-none rounded-lg border border-solid border-gray-300 bg-clip-padding px-3 py-2 font-normal text-gray-700 outline-none transition-all placeholder:text-gray-500 focus:border-blue-500 focus:outline-none">
                     </div>
                 </div>
@@ -762,7 +841,7 @@ hidden z-50">
                     <div class="mb-4">
                         <label class="inline-block ml-1 font-bold text-sm text-slate-800 dark:text-white/80">
                             Thời gian kết thúc</label>
-                        <input value="" type="text" name="endTime"
+                        <input name="endTime" value="" type="text"
                             class="bg-gray-200 focus:shadow-primary-outline dark:bg-slate-850 dark:text-white text-sm leading-5.6 ease block w-full appearance-none rounded-lg border border-solid border-gray-300 bg-clip-padding px-3 py-2 font-normal text-gray-700 outline-none transition-all placeholder:text-gray-500 focus:border-blue-500 focus:outline-none">
                     </div>
                 </div>
@@ -770,7 +849,7 @@ hidden z-50">
                     <div class="mb-4">
                         <label class="inline-block ml-1 font-bold text-sm text-slate-800 dark:text-white/80">
                             Thứ</label>
-                        <input value="" type="text" name="thu"
+                        <input name="thu" value="" type="text"
                             class="bg-gray-200 focus:shadow-primary-outline dark:bg-slate-850 dark:text-white text-sm leading-5.6 ease block w-full appearance-none rounded-lg border border-solid border-gray-300 bg-clip-padding px-3 py-2 font-normal text-gray-700 outline-none transition-all placeholder:text-gray-500 focus:border-blue-500 focus:outline-none">
                     </div>
                 </div>
@@ -865,6 +944,7 @@ hidden z-50">
             let thuInput = document.querySelector("#dialog_edit input[name='thu']");
             let idInput = document.querySelector("#dialog_edit input[name='id']");
 
+
             // Fill in the input fields with data
 
             nameInput.value = name;
@@ -888,6 +968,7 @@ hidden z-50">
             dialog.classList.add('hidden');
         }
 
+        ////////////////////////////////////////////////////
 
         function showDialog_add() {
             let dialog = document.getElementById("dialog_edit");
@@ -899,7 +980,7 @@ hidden z-50">
             document.querySelector("#dialog_edit input[name='malop']").value = "";
             document.querySelector("#dialog_edit input[name='phongHoc']").value = "";
             document.querySelector("#dialog_edit input[name='soluong']").value = "";
-            document.querySelector("#dialog_edit input[name='maxStudnet']").value = "";
+            document.querySelector("#dialog_edit input[name='maxStudent']").value = "";
             document.querySelector("#dialog_edit input[name='startTime']").value = "";
             document.querySelector("#dialog_edit input[name='endTime']").value = "";
             document.querySelector("#dialog_edit input[name='thu']").value = "";
@@ -917,6 +998,9 @@ hidden z-50">
             }
         }
 
+
+
+
         function addNewData() {
 
             const newName = document.querySelector("#dialog_edit input[name='name']").value;
@@ -928,7 +1012,6 @@ hidden z-50">
             const newendTime = document.querySelector("#dialog_edit input[name='endTime']").value;
             const newthu = document.querySelector("#dialog_edit input[name='thu']").value;
 
-
             try {
                 // Gửi yêu cầu thêm mới dữ liệu đến máy chủ
                 const response = fetch('/class', {
@@ -937,6 +1020,7 @@ hidden z-50">
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
+
                         name: newName,
                         malop: newmalop,
                         phongHoc: newphongHoc,

@@ -13,26 +13,50 @@ const Joi = require('joi');
 module.exports = {
   getClassExams: async (req, res) => {
     try {
-      let results = await ClassExam.find({})
+      const currentPage = parseInt(req.query.page) || 1;
+      const itemsPerPage = 1; // Thay đổi số lượng mục mỗi trang nếu cần
+      const searchCode = req.query.mhp || '';
+      const searchName = req.query.thp || '';
+
+      let query = {};
+      if (searchCode) {
+        query.classId = { $regex: searchCode, $options: 'i' };
+      }
+      if (searchName) {
+        query['classId.name'] = { $regex: searchName, $options: 'i' };
+      }
+
+      const totalItems = await ClassExam.countDocuments(query);
+      const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+      const classExamResults = await ClassExam.find(query)
         .populate({
           path: 'classId',
           populate: {
-            path: 'idCourse', // Populate idCourse from class
-            model: 'course' // Ensure the model is correct
+            path: 'idCourse',
+            model: 'course'
           }
         })
         .populate({
-          path: 'teacherId', // Populate teacherId to get teacher details
-          select: 'name' // Only select the 'name' field from the user document
-        });
+          path: 'teacherId',
+          select: 'name'
+        })
+        .skip((currentPage - 1) * itemsPerPage)
+        .limit(itemsPerPage);
 
-
-      return res.render('build/pages/classexams_management.ejs', { listClassExam: results });
+      res.render('build/pages/classexams_management.ejs', {
+        listClassExam: classExamResults,
+        totalPages: totalPages,
+        currentPage: currentPage,
+        searchCode: searchCode,
+        searchName: searchName,
+      });
     } catch (error) {
       console.error(error);
       res.status(500).send("Internal Server Error");
     }
   },
+
   searchClassExamsByName: async (req, res) => {
     try {
       const { className } = req.body;

@@ -245,33 +245,34 @@
                         <!-- <li class="flex items-center">
                       <a class="inline-block px-8 py-2 mb-0 mr-4 text-xs font-bold text-center text-blue-500 uppercase align-middle transition-all ease-in bg-transparent border border-blue-500 border-solid rounded-lg shadow-none cursor-pointer leading-pro hover:-translate-y-px active:shadow-xs hover:border-blue-500 active:bg-blue-500 active:hover:text-blue-500 hover:text-blue-500 tracking-tight-rem hover:bg-transparent hover:opacity-75 hover:shadow-none active:text-white active:hover:bg-transparent" target="_blank" href="https://www.creative-tim.com/builder/soft-ui?ref=navbar-dashboard&amp;_ga=2.76518741.1192788655.1647724933-1242940210.1644448053">Online Builder</a>
                     </li> -->
-                    <li class="flex items-center">
-                        <a href="/" id="logoutLink" class="block px-0 py-2 text-sm font-semibold text-white transition-all ease-nav-brand">
-                          <i class="fa fa-user sm:mr-1"></i>
-                          <span class="hidden sm:inline">Logout</span>
-                        </a>
-                      </li>
-                      <script>
-                        document.getElementById('logoutLink').addEventListener('click', async function (event) {
-                          event.preventDefault();
-                      
-                          try {
-                            const response = await fetch('/logout', {
-                              method: 'GET',
-                              credentials: 'same-origin'
+                        <li class="flex items-center">
+                            <a href="/" id="logoutLink"
+                                class="block px-0 py-2 text-sm font-semibold text-white transition-all ease-nav-brand">
+                                <i class="fa fa-user sm:mr-1"></i>
+                                <span class="hidden sm:inline">Logout</span>
+                            </a>
+                        </li>
+                        <script>
+                            document.getElementById('logoutLink').addEventListener('click', async function (event) {
+                                event.preventDefault();
+
+                                try {
+                                    const response = await fetch('/logout', {
+                                        method: 'GET',
+                                        credentials: 'same-origin'
+                                    });
+
+                                    if (response.ok) {
+                                        window.location.href = '/';
+                                    } else {
+                                        alert('Failed to log out. Please try again.');
+                                    }
+                                } catch (error) {
+                                    console.error('Error during logout:', error);
+                                    alert('An error occurred during logout. Please try again.');
+                                }
                             });
-                      
-                            if (response.ok) {
-                              window.location.href = '/';
-                            } else {
-                              alert('Failed to log out. Please try again.');
-                            }
-                          } catch (error) {
-                            console.error('Error during logout:', error);
-                            alert('An error occurred during logout. Please try again.');
-                          }
-                        });
-                      </script>
+                        </script>
                         <li class="flex items-center pl-4 xl:hidden">
                             <a href="javascript:;" class="block p-0 text-sm text-white transition-all ease-nav-brand"
                                 sidenav-trigger>
@@ -407,103 +408,55 @@
 
 
                         <div class="flex flex-wrap">
-                            <div class="md:w-1/2 lg:w-1/3 xl:w-1/4 max-w-xs lg:max-w-md xl:max-w-lg p-4">
-                                <div>
-                                    <div class="relative group">
-                                        <button id="dropdown-button"
-                                            class="focus:shadow-primary-outline dark:bg-slate-850 dark:text-white text-sm leading-5.6 ease block w-full appearance-none rounded-lg border border-solid border-gray-300 bg-clip-padding px-3 py-2 font-normal text-gray-700 outline-none transition-all placeholder:text-gray-500 focus:border-blue-500 focus:outline-none">
-                                            <span class="flex items-center">
-                                                <span class="mr-auto" id="dropdown-selected">Tìm theo tên</span>
-                                                <span>
-                                                    <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none"
-                                                        xmlns="http://www.w3.org/2000/svg">
-                                                        <path d="M19 9L12 16L5 9" stroke="currentColor" stroke-width="2"
-                                                            stroke-linecap="round" stroke-linejoin="round"></path>
-                                                    </svg>
-                                                </span>
-                                            </span>
-                                        </button>
-                                        <div id="dropdown-menu"
-                                            class="hidden focus:shadow-primary-outline dark:bg-slate-850 dark:text-white text-sm leading-5.6 ease w-full h-50 appearance-none border border-solid border-gray-300 bg-clip-padding px-3 py-2 font-normal text-gray-700 outline-none transition-all placeholder:text-gray-500 focus:border-blue-500 focus:outline-none absolute right-0 mt-2 rounded-1.4 shadow-lg bg-white p-2 z-30 overflow-y-auto">
-                                            <!-- Search input -->
-                                            <!-- Dropdown content goes here -->
-                                            <a href="#" onclick="selectClass('All')"
-                                                class="block px-4 py-2 text-gray-700 hover:bg-gray-200 active:bg-blue-100 cursor-pointer rounded-md">All</a>
-                                            <% listClassExam.forEach(function(classItem) { %>
-                                                <a href="#" onclick="selectClass('<%= classItem.classId.name %>')"
-                                                    class="block px-4 py-2 text-gray-700 hover:bg-gray-200 active:bg-blue-100 cursor-pointer rounded-md">
-                                                    <%= classItem.classId.name %>
-                                                </a>
-                                                <% }); %>
-                                        </div>
-                                    </div>
-                                </div>
-                                <script src="../js/alpine.js" async></script>
-                                <script>
-
-                                    // JavaScript to toggle the dropdown
-                                    const dropdownButton = document.getElementById('dropdown-button');
-                                    const dropdownMenu = document.getElementById('dropdown-menu');
-                                    const dropdownSelected = document.getElementById('dropdown-selected');
-                                    let isOpen = false;
-
-                                    // Function to toggle the dropdown state
-                                    function toggleDropdown() {
-                                        isOpen = !isOpen;
-                                        dropdownMenu.classList.toggle('hidden', !isOpen);
-                                    }
-
-                                    // Function to select a class and update the dropdown button text
-                                    function selectClass(className) {
-                                        dropdownSelected.textContent = className;
-                                        toggleDropdown();
-                                    }
-
-                                    // Set initial state
-                                    dropdownButton.addEventListener('click', () => {
-                                        toggleDropdown();
-                                    });
-
-                                    document.addEventListener('click', function (event) {
-                                        const isClickInsideDropdown = dropdownButton.contains(event.target) || dropdownMenu.contains(event.target);
-
-                                        if (!isClickInsideDropdown) {
-                                            // Đóng dropdown nếu click ra bên ngoài
-                                            dropdownMenu.classList.add('hidden');
-                                            isOpen = false;
-                                        }
-                                    });
-                                </script>
-                            </div>
-
-
 
                             <div class="md:w-1/2 lg:w-1/3 xl:w-1/4 max-w-xs lg:max-w-md xl:max-w-lg p-4">
-                                <input type="text" placeholder="Tìm theo mã lớp thi"
+                                <input id="search-input-code" type="text" placeholder="Tìm theo mã lớp học"
+                                    value="<%= typeof searchCode !== 'undefined' ? searchCode : '' %>"
                                     class="focus:shadow-primary-outline text-sm leading-5.6 ease block w-full appearance-none rounded-lg border border-solid border-gray-300 bg-white bg-clip-padding px-3 py-2 font-normal text-gray-700 outline-none transition-all placeholder:text-gray-500 focus:border-blue-500 focus:outline-none"></input>
                             </div>
 
                             <div class="md:w-1/2 lg:w-1/3 xl:w-1/4 max-w-xs lg:max-w-md xl:max-w-lg p-4">
-                                <input type="text" placeholder="Tìm theo tên học phần"
+                                <input id="search-input-name" type="text" placeholder="Tìm theo tên lớp học"
+                                    value="<%= typeof searchName !== 'undefined' ? searchName : '' %>"
                                     class="focus:shadow-primary-outline text-sm leading-5.6 ease block w-full appearance-none rounded-lg border border-solid border-gray-300 bg-white bg-clip-padding px-3 py-2 font-normal text-gray-700 outline-none transition-all placeholder:text-gray-500 focus:border-blue-500 focus:outline-none"></input>
                             </div>
 
                             <div class="md:w-1/2 lg:w-1/3 xl:w-1/4 max-w-xs lg:max-w-md xl:max-w-lg p-4">
                                 <div class="flex flex-row">
-                                    <button type="button"
+                                    <button id="search-button" type="button"
                                         class="inline-flex items-center px-2 py-2.5 mr-4 font-bold text-white uppercase align-middle transition-all rounded-lg cursor-pointer bg-gradient-to-tl from-blue-500 to-violet-500 leading-normal text-xs ease-in tracking-tight-rem shadow-xs bg-150 bg-x-25 hover:-translate-y-px active:opacity-85 hover:shadow-md">
                                         <img src="../img/ic/ic_search.svg" class="w-5 h-5 text-white" alt="Icon">
                                         <span>Tìm kiếm</span>
                                     </button>
-                                    <button type="button"
+                                    <button id="reset-button" type="button"
                                         class="inline-flex items-center px-2 py-2.5 font-bold text-white uppercase align-middle transition-all rounded-lg cursor-pointer bg-gradient-to-tl from-red-600 to-orange-600 leading-normal text-xs ease-in tracking-tight-rem shadow-xs bg-150 bg-x-25 hover:-translate-y-px active:opacity-85 hover:shadow-md">
                                         <img src="../img/ic/ic_search.svg" class="w-5 h-5 text-white" alt="Icon">
                                         <span>Reset</span>
                                     </button>
                                 </div>
                             </div>
-
                         </div>
+                        <script>
+                            document.getElementById('search-button').addEventListener('click', function () {
+                                const searchInputCode = document.querySelector('#search-input-code').value;
+                                const searchInputName = document.querySelector('#search-input-name').value;
+                                const url = new URL(window.location.href);
+                                url.pathname = '/classExams';
+                                url.searchParams.set('page', 1);  // Thiết lập trang mặc định là 1
+                                if (searchInputCode) {
+                                    url.searchParams.set('mhp', searchInputCode);
+                                }
+                                if (searchInputName) {
+                                    url.searchParams.set('thp', searchInputName);
+                                }
+                                window.location.href = url.toString();
+                            });
+
+                            document.getElementById('reset-button').addEventListener('click', function () {
+                                window.location.href = '/classExams?page=1';
+                            });
+                        </script>
+
                         <div class="flex-auto px-0 pt-0 pb-2">
                             <div class="p-0 overflow-x-auto">
                                 <table
@@ -648,7 +601,66 @@
             </div>
         </div>
         <!-- end cards -->
+        <div style="text-align:center; margin-top: 20px;">
 
+            <style>
+                .pagination {
+                    display: inline-block;
+                    padding: 0;
+                    margin: 0;
+                }
+
+                .pagination a,
+                .pagination span {
+                    color: #6a0dad;
+                    /* Màu tím chủ đạo */
+                    float: left;
+                    padding: 8px 16px;
+                    text-decoration: none;
+                    transition: background-color 0.3s;
+                    border: 1px solid #ddd;
+                    margin: 0 4px;
+                    border-radius: 4px;
+                }
+
+                .pagination a:hover {
+                    background-color: #ddd;
+                }
+
+                .pagination a.active {
+                    background-color: #6a0dad;
+                    color: white;
+                    border: 1px solid #6a0dad;
+                }
+            </style>
+
+            <div class="pagination">
+                <% if (typeof totalPages !=='undefined' && totalPages> 1) { %>
+                    <a href="?page=<%= currentPage > 1 ? currentPage - 1 : 1 %>&mhp=<%= searchCode %>&thp=<%= searchName %>"
+                        class="pagination-link <%= currentPage === 1 ? 'disabled' : '' %>">Previous</a>
+                    <% for (let i=1; i <=totalPages; i++) { %>
+                        <a href="?page=<%= i %>&mhp=<%= searchCode %>&thp=<%= searchName %>"
+                            class="pagination-link <%= currentPage === i ? 'active' : '' %>">
+                            <%= i %>
+                        </a>
+                        <% } %>
+                            <% if (currentPage < totalPages) { %>
+                                <a href="?page=<%= currentPage + 1 %>&mhp=<%= searchCode %>&thp=<%= searchName %>"
+                                    class="pagination-link">Next</a>
+                                <% } else { %>
+                                    <span class="pagination-link">Next</span>
+                                    <% } %>
+                                        <% } %>
+            </div>
+            <script>
+                document.addEventListener('DOMContentLoaded', () => {
+                    const activeLink = document.querySelector('.pagination-link.active');
+                    if (activeLink) {
+                        activeLink.style.fontWeight = 'bold';
+                    }
+                });
+            </script>
+        </div>
     </main>
 
     <!-- -->
